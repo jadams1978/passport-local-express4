@@ -3,7 +3,8 @@ const Schema = mongoose.Schema;
 
 const LeaugeSchema = new Schema({
 	leaguename:String,
-	teames:Array
+	teames:Array,
+	createdBy:String
  
 });
 

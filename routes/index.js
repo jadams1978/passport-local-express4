@@ -4,30 +4,47 @@ const express = require('express');
 const passport = require('passport');
 const Account = require('../models/account');
 const Team = require('../models/team');
-const Leauge = require('../models/league');
-/*const bodyParser = require('body-parser');
+const League = require('../models/league');
 
-
-const jsonParser = bodyParser.json();
-router.use(bodyParser.urlencoded({ extended: true })); 
-router.use(bodyParser.json());*/
 const router = express.Router();
-
-
 
 
 router.get('/', (req, res) => {
     res.render('index', { user : req.user });
-});
+})
 
+router.get('/profile', (req, res) => {
+    if (!req.user) { res.redirect('/'); }
+    if (req.user) {
+        console.log(req.user);
+        League
+            .find({'createdBy':req.user._id}) 
+            .exec()
+            .then(leagues => {
+                console.log(leagues)
+                res.render('profile', { user : req.user, leagues: leagues });
+            }) 
+    }
+    
+});
+router.get('/league/:id', (req, res) => {
+    if (!req.user) { res.redirect('/'); }
+    if (req.user) {
+        console.log(req.params.id);
+        League
+            .findOne({'_id':req.params.id}) 
+            .exec()
+            .then(league => {
+                console.log(league)
+                res.render('league', { leaguename: league.leaguename, john: "adams", teams: league.teams });
+            }) 
+    }
+    
+});
 router.post('/create-league', (req, res) => {
-	console.log(req.body);
-	let leagueName = 'yo'; 
-	//console.log(req.body.league-name)
-	console.log(leagueName)
-	
-	Leauge.create({'leaguename':req.body.leaguename})
-        res.render('index', { user : req.user });
+	League.create({'leaguename':req.body.leaguename, 'createdBy':req.user._id})
+        //res.render('index', { user : req.user });
+        res.redirect('/profile');
 });
 
 
@@ -46,7 +63,7 @@ router.post('/register', (req, res, next) => {
                 if (err) {
                     return next(err);
                 }
-                res.redirect('/');
+                res.redirect('/profile');
             });
         });
     });
@@ -62,7 +79,7 @@ router.post('/login', passport.authenticate('local', { failureRedirect: '/login'
         if (err) {
             return next(err);
         }
-        res.redirect('/');
+        res.redirect('/profile');
     });
 });
 
