@@ -1,12 +1,35 @@
+
+
 const express = require('express');
 const passport = require('passport');
 const Account = require('../models/account');
+const Team = require('../models/team');
+const Leauge = require('../models/league');
+/*const bodyParser = require('body-parser');
+
+
+const jsonParser = bodyParser.json();
+router.use(bodyParser.urlencoded({ extended: true })); 
+router.use(bodyParser.json());*/
 const router = express.Router();
+
+
 
 
 router.get('/', (req, res) => {
     res.render('index', { user : req.user });
 });
+
+router.post('/create-league', (req, res) => {
+	console.log(req.body);
+	let leagueName = 'yo'; 
+	//console.log(req.body.league-name)
+	console.log(leagueName)
+	
+	Leauge.create({'leaguename':req.body.leaguename})
+        res.render('index', { user : req.user });
+});
+
 
 router.get('/register', (req, res) => {
     res.render('register', { });
